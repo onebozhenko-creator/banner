@@ -7,10 +7,11 @@ function registerSlackHandlers(app) {
   app.command('/banner', async ({ ack, body, client }) => {
     await ack();
 
-    const templateOptions = Object.entries(TEMPLATES).map(([id, t]) => ({
-      text: { type: 'plain_text', text: `${t.name} — ${t.description}` },
-      value: id,
-    }));
+    const templateOptions = Object.entries(TEMPLATES).map(([id, t]) => {
+      const fullText = t.description ? `${t.name} — ${t.description}` : t.name;
+      const text = fullText.length > 75 ? fullText.slice(0, 72) + '...' : fullText;
+      return { text: { type: 'plain_text', text }, value: id };
+    });
 
     const logos = listLogos();
     const logoOptions = logos.length > 0
